@@ -16,19 +16,18 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
 
+            $table->string('status')->nullable();
+            $table->string('type')->nullable();
+            $table->string('code')->nullable();
+
             $table->integer('user_id')->unsigned()->nullable()->index();
             $table->integer('patient_id')->unsigned()->nullable()->index();
 
-            $table->string('first_name')->nullable();
-            $table->string('last_name')->nullable();
-
-            $table->string('gender')->nullable();
-
-            $table->string('status')->nullable();
-
-            $table->string('chief_complaint')->nullable();
-
-            $table->string('contact_no')->nullable();
+            $table->string('date')->unsigned()->nullable()->index();
+            $table->string('time_start')->unsigned()->nullable()->index();
+            $table->string('time_end')->unsigned()->nullable()->index();
+            
+            $table->tinyInteger('deprecated')->default(0);
 
             $table->timestamps();
         });

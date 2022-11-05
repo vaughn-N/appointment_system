@@ -20,7 +20,7 @@ class Patient extends Model
         'last_name',
         'gender',
         'status',
-        'chief_complaint',
+
         'contact_no',
 
     ];
@@ -51,6 +51,11 @@ class Patient extends Model
     public function schedule()
     {
         return $this->hasMany('App\Model\Schedule');
+    }
+
+    public function patient_records()
+    {
+        return $this->hasMany('App\Model\PatientRecord');
     }
 
 }

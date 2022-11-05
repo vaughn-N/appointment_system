@@ -5,7 +5,14 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Validator;
+
 use App\Models\Patient;
+
+use App\Http\Resources\PatientResource;
+use App\Http\Resources\PatientsResource;
 
 class PatientsController extends Controller
 {
@@ -14,48 +21,28 @@ class PatientsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $where = [
-			['deprecated', '=', 0]
-		];
+            ['deprecated', '=', 0]
+        ];
 
-		if ($request->input('status') AND $request->input('status') != null AND $request->input('status') != '') {
-			$where[] = [
-		 		'status', '=', $request->input('status')
-		 	];
-		}
-
-		$order = 'asc';
-		if ($request->input('order') AND $request->input('order') != null AND $request->input('order') != '') {
-		 	if ($request->input('order') == 'asc' OR $request->input('order') == 'desc') {
-		 		$order = $request->input('order');
-		 	}
-		}
-
-        $records = Listing::where($where)->orderBy('id', $order)->get();
-
-        $data = [];
-        if ($records){
-            
-            $data = [
-                'id' => $record->id,
-
-                'status' => $record->status,
-                'type' => $record->type,
-
-                'code' => $record->code,
-
-                'first_name' => $record->first_name,
-                'last_name' => $record->last_name,
-                'gender' => $record->gender,
-                'status' => $record->status,
-                'chief_complaint' => $record->chief_complaint,
-                'contact_no' => $record->contact_no,
+        if ($request->input('status') and $request->input('status') != null and $request->input('status') != '') {
+            $where[] = [
+                'status', '=', $request->input('status')
             ];
         }
 
-        return $data;
+        $order = 'asc';
+        if ($request->input('order') and $request->input('order') != null and $request->input('order') != '') {
+            if ($request->input('order') == 'asc' or $request->input('order') == 'desc') {
+                $order = $request->input('order');
+            }
+        }
+
+        $patients = Patient::where($where)->orderBy('id', $order)->get();
+
+        return new PatientsResource($patients);
     }
 
     /**
@@ -76,7 +63,42 @@ class PatientsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [];
+
+        $_input = $request->input();
+
+        $validator = Validator::make($_input, $rules);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->toArray();
+
+            $data = [
+                'status' => 'Fail',
+                'errors' => $errors
+            ];
+        } else {
+            DB::beginTransaction();
+
+            $patient = new Patient($_input);
+            $patient->code = $patient->generate_code();
+            $patient->status = "Active";
+
+            $patient->save();
+
+            DB::commit();
+
+            $patient_resource = new PatientsResource($patient);
+
+            $data = [
+                'status' => 'Success',
+                'data' => [
+                    'id' => $patient->id,
+                    'patient' => $patient_resource
+                ]
+            ];
+
+            return response()->json($data);
+        }
     }
 
     /**
@@ -87,7 +109,27 @@ class PatientsController extends Controller
      */
     public function show($id)
     {
-        //
+        $where = [
+            ['deprecated', '=', 0],
+            ['id', '=', $id]
+        ];
+
+        $patient = Patient::where($where)->first();
+
+        if ($patient) {
+            return new PatientResource($patient);
+        } else {
+            $errors = [
+                'Patient Does not Exist'
+            ];
+
+            $data = [
+                'status' => 'Fail',
+                'errors' => $errors
+            ];
+        }
+
+        return response()->json($data);
     }
 
     /**
@@ -110,7 +152,15 @@ class PatientsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $rules = [];
+
+        $_input = $request->input();
+
+        $validator = Validator::make($_input, $rules);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors()->toArray();
+        }
     }
 
     /**
