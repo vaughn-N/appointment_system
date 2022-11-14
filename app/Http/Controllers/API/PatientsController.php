@@ -160,7 +160,54 @@ class PatientsController extends Controller
 
         if ($validator->fails()) {
             $errors = $validator->errors()->toArray();
+
+            $data = [
+                'status' => 'Fail',
+                'errors' => $errors
+            ];
+
         }
+        else {
+            DB::beginTransaction();
+
+            $where = [
+                ['deprecated','=',0],
+                ['id','=',$id]
+            ];
+
+            $patient = Patient::where($where)->first();
+
+            if ($patient) {
+                $patient->fill($_input);
+                $patient->save();
+
+                DB::commit();
+
+                $patient_resource = new PatientResource($patient);
+
+
+                $data = [
+                    'status' => 'Success',
+                    'data'=> [
+                        'id' => $patient->id,
+                        'patient' => $patient_resource,
+                    ]
+                ];
+            } 
+            else {
+                DB::rollback();
+
+                $errors = [
+                    'Patient Does not exist'
+                ];
+
+                $data = [
+					'status' => 'Fail',
+					'errors' => $errors
+				];
+            }
+        }
+        return response()->json($data);
     }
 
     /**
@@ -171,6 +218,37 @@ class PatientsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        
+        $where = [
+            ['deprecated', '=', 0],
+            ['id', '=', $id]
+        ];
+
+        $patient = ContactUs::where($where)->first();
+
+        if ($patient) {
+            $patient->deprecated = 1;
+            $patient->save();
+
+            $patient_resource= new ContactFormResource($patient);
+
+            $data = [
+                'status' => 'Success',
+                'data' => [
+                    'id' => $patient->id,
+                    'contact form' => $patient_resource
+                ]
+            ];
+        } else {
+            $errors = [
+                'Contact Form does not exist!'
+            ];
+            $data = [
+                'status' => 'Fail',
+                'errors' => $errors
+            ];
+        }
+        
+        return response()->json($data);
     }
 }

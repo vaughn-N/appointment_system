@@ -8,4 +8,41 @@ use Illuminate\Database\Eloquent\Model;
 class Doctor extends Model
 {
     use HasFactory;
+
+    protected $table = 'doctors';
+
+    protected $fillable = [
+        'status',
+        'type',
+        'code',
+
+        'first_name',
+        'last_name',
+        'gender',
+        'birth_date',
+
+        'contact_no',
+    ];
+
+    protected $hidden = [];
+
+    public function generate_code() {
+        $code = "DOC".mt_rand(10000000, 99999999);
+
+        if($this->code_exists($code)) {
+            return $this->generate_code();
+        }
+    }
+
+    public function code_exists($code) {
+        return Patient::whereCode($code)->exists();
+    }
+
+    public function user() {
+        return $this->belongsTo('App\Model\User', 'user_id');
+    }
+    public function schedule()
+    {
+        return $this->hasMany('App\Model\Schedule');
+    }
 }

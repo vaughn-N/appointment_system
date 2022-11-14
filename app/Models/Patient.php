@@ -9,7 +9,7 @@ class Patient extends Model
 {
     use HasFactory;
 
-    protected $table = 'schedules';
+    protected $table = 'patients';
 
     protected $fillable = [
         'status',
@@ -19,7 +19,7 @@ class Patient extends Model
         'first_name',
         'last_name',
         'gender',
-        'status',
+        'birth_date',
 
         'contact_no',
 

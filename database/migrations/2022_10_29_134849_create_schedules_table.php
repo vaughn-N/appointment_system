@@ -15,17 +15,17 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id')->unsigned()->nullable()->index();
+            $table->integer('patient_id')->unsigned()->nullable()->index();
+            $table->integer('doctor_id')->unsigned()->nullable()->index();
 
             $table->string('status')->nullable();
             $table->string('type')->nullable();
             $table->string('code')->nullable();
 
-            $table->integer('user_id')->unsigned()->nullable()->index();
-            $table->integer('patient_id')->unsigned()->nullable()->index();
-
-            $table->string('date')->unsigned()->nullable()->index();
-            $table->string('time_start')->unsigned()->nullable()->index();
-            $table->string('time_end')->unsigned()->nullable()->index();
+            $table->string('date')->nullable();
+            $table->string('time_start')->nullable();
+            $table->string('time_end')->nullable();
             
             $table->tinyInteger('deprecated')->default(0);
 

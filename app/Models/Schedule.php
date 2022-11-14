@@ -25,7 +25,7 @@ class Schedule extends Model
 
     public function generate_code()
     {
-        $code = "PAT".mt_rand(10000000, 99999999);
+        $code = "SCH".mt_rand(10000000, 99999999);
 
         if($this->code_exists($code))
         {

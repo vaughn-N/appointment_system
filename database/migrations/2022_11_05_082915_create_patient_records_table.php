@@ -15,6 +15,19 @@ return new class extends Migration
     {
         Schema::create('patient_records', function (Blueprint $table) {
             $table->id();
+
+            $table->integer('patient_id')->unsigned()->nullable()->index();
+
+            $table->string('height')->nullable();
+            $table->string('weight')->nullable();
+            $table->string('temperature')->nullable();
+
+            $table->longText('symptoms')->nullable();
+
+            $table->string('chief_complaint')->nullable();
+
+            $table->tinyInteger('deprecated')->default(0);
+
             $table->timestamps();
         });
     }
