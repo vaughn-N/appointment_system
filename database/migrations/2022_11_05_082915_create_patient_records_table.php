@@ -17,14 +17,18 @@ return new class extends Migration
             $table->id();
 
             $table->integer('patient_id')->unsigned()->nullable()->index();
+            
+            $table->string('status')->nullable();
+            $table->string('type')->nullable();
+            $table->string('code')->nullable();
 
-            $table->string('height')->nullable();
-            $table->string('weight')->nullable();
-            $table->string('temperature')->nullable();
+            $table->integer('height')->nullable();
+            $table->integer('weight')->nullable();
+            $table->integer('temperature')->nullable();
 
             $table->longText('symptoms')->nullable();
 
-            $table->string('chief_complaint')->nullable();
+            $table->longText('complaint')->nullable();
 
             $table->tinyInteger('deprecated')->default(0);
 

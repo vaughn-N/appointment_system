@@ -1,48 +1,47 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use DB;
+use Validator;
 
-use App\Models\Schedule;
+use App\Models\PatientRecord;
 
-use App\Http\Resources\ScheduleResource;
-use App\Http\Resources\SchedulesResource;
+use App\Http\Resources\PatientRecordResource;
+use App\Http\Resources\PatientRecordsResource;
 
-class SchedulesController extends Controller
+class PatientRecordsController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
         $where = [
-            ['deprecated', '=', 0]
-        ];
+			['deprecated', '=', 0]
+		];
 
-        if ($request->input('status') and $request->input('status') != null and $request->input('status') != '') {
-            $where[] = [
-                'status', '=', $request->input('status')
-            ];
-        }
+		if ($request->input('status') AND $request->input('status') != null AND $request->input('status') != ''){
+			$where[] = [
+		 		'status', '=', $request->input('status')
+		 	];
+		}
 
-        $order = 'asc';
-        if ($request->input('order') and $request->input('order') != null and $request->input('order') != '') {
-            if ($request->input('order') == 'asc' or $request->input('order') == 'desc') {
-                $order = $request->input('order');
-            }
-        }
+		$order = 'asc';
+		if ($request->input('order') AND $request->input('order') != null AND $request->input('order') != '') {
+		 	if ($request->input('order') == 'asc' OR $request->input('order') == 'desc') {
+		 		$order = $request->input('order');
+		 	}
+		}
 
-        $schedules = Schedule::where($where)->orderBy('id', $order)->get();
+        $records = PatientRecord::where($where)->orderBy('id', $order)->get();
 
-        return new SchedulesResource($schedules);
+        return new PatientRecordsResource($records);
     }
 
     /**
@@ -63,8 +62,10 @@ class SchedulesController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [
+		$rules = [
 			// 'name' => 'unique:tags,name'
+			'patient_id' => 'nullable',
+			'doctor_id' => 'nullable'
         ];
 
         $_input = $request->input();
@@ -81,22 +82,29 @@ class SchedulesController extends Controller
         } else {
 			DB::beginTransaction();
 
+			// $listing_where = [
+			// 	['deprecated', '=', 0],
+			// 	['id', '=', $_input['listing_id']]
+			// ];
+			// $listing = Listing::where($listing_where)->first();
 
-			$schedule = new Schedule($_input);
-			$schedule->code = $schedule->generate_code();
-		    $schedule->status = "Active";
+			$record = new PatientRecord($_input);
+			$record->code = $record->generate_code();
+		    $record->status = "Active";
+		
+			// $record->Patient()->associate($listing);
 			
-		    $schedule->save();
+		    $record->save();
 
 			DB::commit();
 
-			$schedule_resource = new ScheduleResource($schedule);
+			$record_resource = new PatientRecordResource($record);
 
 			$data = [
 				'status' => 'Success',
 				'data' => [
-					'id' => $schedule->id,
-					'schedule' => $schedule_resource
+					'id' => $record->id,
+					'patient' => $record_resource
 				]
 			];
         }
@@ -112,17 +120,18 @@ class SchedulesController extends Controller
      */
     public function show($id)
     {
+        
         $where = [
 			['deprecated', '=', 0],
 			['id', '=', $id]
 		];
-        $schedule = Schedule::where($where)->first();
+        $record = PatientRecord::where($where)->first();
 		
-		if ($schedule) {
-			return new ScheduleResource($schedule);
+		if ($record) {
+			return new PatientRecordResource($record);
 		} else {
 			$errors = [
-				'Schedule does not exist!'
+				'Patient record does not exist!'
 			];
 			
 			$data = [
@@ -155,7 +164,7 @@ class SchedulesController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-			'name' => 'nullable', 
+			// 'name' => 'nullable', 
         ];
 
         $_input = $request->input();
@@ -176,28 +185,28 @@ class SchedulesController extends Controller
 				['deprecated', '=', 0],
 				['id', '=', $id]
 			];
-			$schedule = Schedule::where($where)->first();
+			$record = PatientRecord::where($where)->first();
 			
-			if ($schedule) {
-				$schedule->fill($_input);
-				$schedule->save();
+			if ($record) {
+				$record->fill($_input);
+				$record->save();
 
 				DB::commit();
 				
-				$schedule_resource = new ScheduleResource($schedule);
+				$record_resource = new PatientRecordResource($record);
 
 				$data = [
 					'status' => 'Success',
 					'data' => [
-						'id' => $schedule->id,
-						'schedule' => $schedule_resource
+						'id' => $record->id,
+						'Doctor' => $record_resource
 					]
 				];
 			} else {
 				DB::rollback();
 				
 				$errors = [
-					'Schedule does not exist!'
+					'Doctor does not exist!'
 				];				
 				
 				$data = [
@@ -218,28 +227,29 @@ class SchedulesController extends Controller
      */
     public function destroy($id)
     {
+        //
         $where = [
 			['deprecated', '=', 0],
 			['id', '=', $id]
 		];
-        $schedule = Schedule::where($where)->first();
+        $record = PatientRecord::where($doctor_where)->first();
 		
-		if ($schedule) {
-			$schedule->deprecated = 1;
-			$schedule->save();
+		if ($record) {
+			$record->deprecated = 1;
+			$record->save();
 			
-			$schedule_resource = new ScheduleResource($schedule);
+			$record_resource = new PatientRecordResource($record);
 
 			$data = [
 				'status' => 'Success',
 				'data' => [
-					'id' => $schedule->id,
-					'schedule' => $schedule_resource
+					'id' => $record->id,
+					'Doctor' => $record_resource
 				]
 			];			
 		} else {
 			$errors = [
-				'Schedule does not exist!'
+				'Doctor does not exist!'
 			];
 			
 			$data = [

@@ -4,9 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-use App\Models\Patient;
+use App\Models\Schedule;
 
-class PatientsResource extends ResourceCollection
+class SchedulesResource extends ResourceCollection
 {
     /**
      * Transform the resource into an array.
@@ -16,8 +16,8 @@ class PatientsResource extends ResourceCollection
      */
     public function toArray($request)
     {
-        $this->collection->transform(function(Patient $patient){
-            return (new PatientResource($patient));
+        $this->collection->transform(function(Schedule $schedule){
+            return (new ScheduleResource($schedule));
         });
 
         return [

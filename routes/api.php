@@ -19,4 +19,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-Route::resource('contact-us', 'App\Http\Controllers\API\ContactFormsController');
+Route::resource('patient', 'App\Http\Controllers\API\PatientsController');
+Route::resource('doctor', 'App\Http\Controllers\API\DoctorsController');
+Route::resource('schedule', 'App\Http\Controllers\API\SchedulesController');
+Route::resource('patient-record', 'App\Http\Controllers\API\PatientRecordsController');

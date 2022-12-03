@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-use App\Models\Patient;
+use App\Models\Doctor;
 
 class PatientsResource extends ResourceCollection
 {
@@ -16,8 +16,8 @@ class PatientsResource extends ResourceCollection
      */
     public function toArray($request)
     {
-        $this->collection->transform(function(Patient $patient){
-            return (new PatientResource($patient));
+        $this->collection->transform(function(Doctor $doctor){
+            return (new PatientResource($doctor));
         });
 
         return [

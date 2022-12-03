@@ -32,6 +32,8 @@ class Doctor extends Model
         if($this->code_exists($code)) {
             return $this->generate_code();
         }
+
+        return $code;
     }
 
     public function code_exists($code) {
@@ -41,8 +43,11 @@ class Doctor extends Model
     public function user() {
         return $this->belongsTo('App\Model\User', 'user_id');
     }
+    public function patient() {
+        return $this->belongsTo('App\Model\Patient', 'patient_id');
+    }
     public function schedule()
     {
-        return $this->hasMany('App\Model\Schedule');
+        return $this->belongsTo('App\Model\Schedule','schedule_id');
     }
 }

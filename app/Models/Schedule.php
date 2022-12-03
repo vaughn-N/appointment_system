@@ -16,9 +16,9 @@ class Schedule extends Model
         'type',
         'code',
 
-        'appointment_date',
-        'start_at',
-        'end_at'
+        'date',
+        'time_start',
+        'time_end'
     ];
 
     protected $hidden = [];
@@ -31,6 +31,11 @@ class Schedule extends Model
         {
             return $this->generate_code();
         }
+
+        return $code;
+    }
+    public function code_exists($code) {
+        return Patient::whereCode($code)->exists();
     }
 
     public function user()

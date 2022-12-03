@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PatientResource extends JsonResource
+class ScheduleResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,11 +21,9 @@ class PatientResource extends JsonResource
             'type' => (string)$this->type,
             'code' => (string)$this->code,
 
-            'first_name' => (string)$this->first_name,
-            'last_name' => (string)$this->last_name,
-            'gender' => (string)$this->gender,
-            'status' => (string)$this->status,
-            'contact_no' => (string)$this->contact_no,
+            'date' => (string)$this->date,
+            'time_start' => (string)$this->time_start,
+            'time_end' => (string)$this->time_end,
             
         ];
     }

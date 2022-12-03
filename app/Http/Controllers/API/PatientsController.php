@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\API;
 
+use DB;
+use Validator;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-use Illuminate\Support\Facades\DB;
-
-use Illuminate\Support\Facades\Validator;
 
 use App\Models\Patient;
 
@@ -23,26 +22,26 @@ class PatientsController extends Controller
      */
     public function index(Request $request)
     {
-        $where = [
-            ['deprecated', '=', 0]
-        ];
+		$where = [
+			['deprecated', '=', 0]
+		];
 
-        if ($request->input('status') and $request->input('status') != null and $request->input('status') != '') {
-            $where[] = [
-                'status', '=', $request->input('status')
-            ];
-        }
+		if ($request->input('status') AND $request->input('status') != null AND $request->input('status') != ''){
+			$where[] = [
+		 		'status', '=', $request->input('status')
+		 	];
+		}
 
-        $order = 'asc';
-        if ($request->input('order') and $request->input('order') != null and $request->input('order') != '') {
-            if ($request->input('order') == 'asc' or $request->input('order') == 'desc') {
-                $order = $request->input('order');
-            }
-        }
+		$order = 'asc';
+		if ($request->input('order') AND $request->input('order') != null AND $request->input('order') != '') {
+		 	if ($request->input('order') == 'asc' OR $request->input('order') == 'desc') {
+		 		$order = $request->input('order');
+		 	}
+		}
 
-        $patients = Patient::where($where)->orderBy('id', $order)->get();
+        $records = Patient::where($where)->orderBy('id', $order)->get();
 
-        return new PatientsResource($patients);
+        return new PatientsResource($records);
     }
 
     /**
@@ -63,42 +62,54 @@ class PatientsController extends Controller
      */
     public function store(Request $request)
     {
-        $rules = [];
+        //
+         //
+        $rules = [
+			// 'name' => 'unique:tags,name'
+        ];
 
         $_input = $request->input();
 
         $validator = Validator::make($_input, $rules);
 
         if ($validator->fails()) {
-            $errors = $validator->errors()->toArray();
+			$errors = $validator->errors()->toArray();
 
-            $data = [
-                'status' => 'Fail',
-                'errors' => $errors
-            ];
+			$data = [
+				'status' => 'Fail',
+				'errors' => $errors
+			];
         } else {
-            DB::beginTransaction();
+			DB::beginTransaction();
 
-            $patient = new Patient($_input);
-            $patient->code = $patient->generate_code();
-            $patient->status = "Active";
+			// $listing_where = [
+			// 	['deprecated', '=', 0],
+			// 	['id', '=', $_input['listing_id']]
+			// ];
+			// $listing = Listing::where($listing_where)->first();
 
-            $patient->save();
+			$record = new Patient($_input);
+			$record->code = $record->generate_code();
+		    $record->status = "Active";
+		
+			// $record->Patient()->associate($listing);
+			
+		    $record->save();
 
-            DB::commit();
+			DB::commit();
 
-            $patient_resource = new PatientsResource($patient);
+			$record_resource = new PatientResource($record);
 
-            $data = [
-                'status' => 'Success',
-                'data' => [
-                    'id' => $patient->id,
-                    'patient' => $patient_resource
-                ]
-            ];
-
-            return response()->json($data);
+			$data = [
+				'status' => 'Success',
+				'data' => [
+					'id' => $record->id,
+					'patient' => $record_resource
+				]
+			];
         }
+		
+		return response()->json($data);
     }
 
     /**
@@ -110,26 +121,26 @@ class PatientsController extends Controller
     public function show($id)
     {
         $where = [
-            ['deprecated', '=', 0],
-            ['id', '=', $id]
-        ];
+			['deprecated', '=', 0],
+			['id', '=', $id]
+		];
+        $record = Patient::where($where)->first();
+		
+		if ($record) {
+			return new PatientResource($record);
+		} else {
+			$errors = [
+				'Patient does not exist!'
+			];
+			
+			$data = [
+				'status' => 'Fail',
+				'errors' => $errors
+			];				
+			
+			return response()->json($data);
+		}
 
-        $patient = Patient::where($where)->first();
-
-        if ($patient) {
-            return new PatientResource($patient);
-        } else {
-            $errors = [
-                'Patient Does not Exist'
-            ];
-
-            $data = [
-                'status' => 'Fail',
-                'errors' => $errors
-            ];
-        }
-
-        return response()->json($data);
     }
 
     /**
@@ -152,62 +163,60 @@ class PatientsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $rules = [];
+        $rules = [
+			'name' => 'nullable', 
+        ];
 
         $_input = $request->input();
 
         $validator = Validator::make($_input, $rules);
 
         if ($validator->fails()) {
-            $errors = $validator->errors()->toArray();
+			$errors = $validator->errors()->toArray();
 
-            $data = [
-                'status' => 'Fail',
-                'errors' => $errors
-            ];
-
-        }
-        else {
+			$data = [
+				'status' => 'Fail',
+				'errors' => $errors
+			];
+        } else {
             DB::beginTransaction();
 
-            $where = [
-                ['deprecated','=',0],
-                ['id','=',$id]
-            ];
+			$where = [
+				['deprecated', '=', 0],
+				['id', '=', $id]
+			];
+			$record = Patient::where($where)->first();
+			
+			if ($record) {
+				$record->fill($_input);
+				$record->save();
 
-            $patient = Patient::where($where)->first();
+				DB::commit();
+				
+				$record_resource = new PatientResource($record);
 
-            if ($patient) {
-                $patient->fill($_input);
-                $patient->save();
-
-                DB::commit();
-
-                $patient_resource = new PatientResource($patient);
-
-
-                $data = [
-                    'status' => 'Success',
-                    'data'=> [
-                        'id' => $patient->id,
-                        'patient' => $patient_resource,
-                    ]
-                ];
-            } 
-            else {
-                DB::rollback();
-
-                $errors = [
-                    'Patient Does not exist'
-                ];
-
-                $data = [
+				$data = [
+					'status' => 'Success',
+					'data' => [
+						'id' => $record->id,
+						'Patient' => $record_resource
+					]
+				];
+			} else {
+				DB::rollback();
+				
+				$errors = [
+					'Patient does not exist!'
+				];				
+				
+				$data = [
 					'status' => 'Fail',
 					'errors' => $errors
 				];
-            }
+			}
         }
-        return response()->json($data);
+		
+		return response()->json($data);
     }
 
     /**
@@ -218,37 +227,36 @@ class PatientsController extends Controller
      */
     public function destroy($id)
     {
-        
         $where = [
-            ['deprecated', '=', 0],
-            ['id', '=', $id]
-        ];
+			['deprecated', '=', 0],
+			['id', '=', $id]
+		];
+        $record = Patient::where($where)->first();
+		
+		if ($record) {
+			$record->deprecated = 1;
+			$record->save();
+			
+			$record_resource = new PatientResource($record);
 
-        $patient = ContactUs::where($where)->first();
-
-        if ($patient) {
-            $patient->deprecated = 1;
-            $patient->save();
-
-            $patient_resource= new ContactFormResource($patient);
-
-            $data = [
-                'status' => 'Success',
-                'data' => [
-                    'id' => $patient->id,
-                    'contact form' => $patient_resource
-                ]
-            ];
-        } else {
-            $errors = [
-                'Contact Form does not exist!'
-            ];
-            $data = [
-                'status' => 'Fail',
-                'errors' => $errors
-            ];
-        }
-        
-        return response()->json($data);
+			$data = [
+				'status' => 'Success',
+				'data' => [
+					'id' => $record->id,
+					'Patient' => $record_resource
+				]
+			];			
+		} else {
+			$errors = [
+				'Patient does not exist!'
+			];
+			
+			$data = [
+				'status' => 'Fail',
+				'errors' => $errors
+			];
+		}
+		
+		return response()->json($data);
     }
 }

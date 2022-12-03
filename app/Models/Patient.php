@@ -14,6 +14,7 @@ class Patient extends Model
     protected $fillable = [
         'status',
         'type',
+
         'code',
 
         'first_name',
@@ -23,6 +24,8 @@ class Patient extends Model
 
         'contact_no',
 
+        'deprecated'
+
     ];
 
     protected $hidden = [];
@@ -30,15 +33,16 @@ class Patient extends Model
 
     public function generate_code()
     {
-        $code = "PAT".mt_rand(10000000, 99999999);
+        $code = "PT".mt_rand(10000000, 99999999);
 
-        if($this->code_exists($code))
-        {
+        if($this->code_exists($code)) {
             return $this->generate_code();
         }
+
+        return $code;
     }
 
-    public function code_exists($code) 
+    public function code_exists($code)
     {
         return Patient::whereCode($code)->exists();
     }

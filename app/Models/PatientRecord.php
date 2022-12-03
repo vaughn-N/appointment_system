@@ -17,12 +17,12 @@ class PatientRecord extends Model
         'code',
 
         'height',
-        'width',
+        'weight',
         'tempreture',
 
         'symptoms',
 
-        'chief_complaint'
+        'complaint'
     ];
 
     protected $hidden = [];
@@ -30,10 +30,11 @@ class PatientRecord extends Model
     public function generate_code() {
         $code = "PTR".mt_rand(10000000, 99999999);
 
-        if ($this->generate_code($code)) 
-        {
+        if($this->code_exists($code)) {
             return $this->generate_code();
         }
+
+        return $code;
     }
 
     public function code_exists($code) {
