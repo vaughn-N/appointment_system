@@ -43,6 +43,6 @@ class PatientRecord extends Model
 
     public function patient()
     {
-        return $this->belongsTo('App\Model\Patient', 'patient_id');
+        return $this->belongsTo('App\Models\Patient', 'patient_id');
     }
 }

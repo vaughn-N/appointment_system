@@ -82,12 +82,6 @@ class PatientsController extends Controller
         } else {
 			DB::beginTransaction();
 
-			// $listing_where = [
-			// 	['deprecated', '=', 0],
-			// 	['id', '=', $_input['listing_id']]
-			// ];
-			// $listing = Listing::where($listing_where)->first();
-
 			$record = new Patient($_input);
 			$record->code = $record->generate_code();
 		    $record->status = "Active";
@@ -164,7 +158,7 @@ class PatientsController extends Controller
     public function update(Request $request, $id)
     {
         $rules = [
-			'name' => 'nullable', 
+			'name' => 'required', 
         ];
 
         $_input = $request->input();

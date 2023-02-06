@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('code')->nullable();
 
             $table->string('date')->nullable();
-            $table->string('time_start')->nullable();
-            $table->string('time_end')->nullable();
             
             $table->tinyInteger('deprecated')->default(0);
 

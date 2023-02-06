@@ -21,11 +21,11 @@ class PatientSchedule extends Model
 
     public function patient()
     {
-        return $this->belongsTo('App\Model\Patient', 'patient_id');
+        return $this->belongsTo('App\Models\Patient', 'patient_id');
     }
 
     public function doctor()
     {
-        return $this->belongsTo('App\Model\Schedule');
+        return $this->belongsTo('App\Models\Schedule');
     }
 }

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Schedule;
+use App\Models\Patient;
+use App\Models\Doctor;
 
 use App\Http\Resources\ScheduleResource;
 use App\Http\Resources\SchedulesResource;
@@ -20,7 +22,7 @@ class SchedulesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         //
         $where = [
@@ -81,11 +83,33 @@ class SchedulesController extends Controller
         } else {
 			DB::beginTransaction();
 
-
 			$schedule = new Schedule($_input);
 			$schedule->code = $schedule->generate_code();
 		    $schedule->status = "Active";
-			
+
+            if(isset($_input['patiend_id'])){
+                $patient_where = [
+                    ['deprecated','=',0],
+                    ['id','=', $_input['patient_id']]
+                ];
+                $patient = Patient::where($patient_where)->first();
+
+              $schedule->patients()->associate($patient);
+
+    
+            }
+            
+            if(isset($_input['doctor_id'])){
+                $doctor_where = [
+                    ['deprecated','=',0],
+                    ['id','=',$_input['doctor_id']]
+                ];
+                $doctor = Doctor::where($doctor_where)->first();
+
+                $schedule->doctors()->associate($doctor);
+
+            }
+
 		    $schedule->save();
 
 			DB::commit();
@@ -180,6 +204,30 @@ class SchedulesController extends Controller
 			
 			if ($schedule) {
 				$schedule->fill($_input);
+
+                if(isset($_input['patient_id'])){
+                    $patient_where = [
+                        ['deprecated','=',0],
+                        ['id','=', $_input['patient_id']]
+                    ];
+                    $patient = Patient::where($patient_where)->first();
+    
+                    $schedule->patients()->associate($patient);
+    
+        
+                }
+                
+                if(isset($_input['doctor_id'])){
+                    $doctor_where = [
+                        ['deprecated','=',0],
+                        ['id','=',$_input['doctor_id']]
+                    ];
+                    $doctor = Doctor::where($doctor_where)->first();
+    
+                    $schedule->doctors()->associate($doctor);
+    
+                }
+
 				$schedule->save();
 
 				DB::commit();

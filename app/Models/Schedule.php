@@ -17,8 +17,6 @@ class Schedule extends Model
         'code',
 
         'date',
-        'time_start',
-        'time_end'
     ];
 
     protected $hidden = [];
@@ -40,16 +38,16 @@ class Schedule extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Model\User', 'user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
 
-    public function patient()
+    public function patients()
     {
-        return $this->belongsTo('App\Model\Schedule');
+        return $this->belongsTo('App\Models\Patient','patient_id');
     }
-    public function doctor()
+    public function doctors()
     {
-        return $this->belongsTo('App\Model\Doctor');
+        return $this->belongsTo('App\Models\Doctor','doctor_id');
     }
 
 

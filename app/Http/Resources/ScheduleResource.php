@@ -4,6 +4,12 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+use App\Models\Doctor;
+use App\Models\Patient;
+use App\Http\Resources\PatientResource;
+use App\Http\Resources\DoctorResource;
+
+
 class ScheduleResource extends JsonResource
 {
     /**
@@ -12,8 +18,11 @@ class ScheduleResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
+
+
     public function toArray($request)
     {
+    
         return [
             'id' => (int)$this->id,
 
@@ -21,9 +30,12 @@ class ScheduleResource extends JsonResource
             'type' => (string)$this->type,
             'code' => (string)$this->code,
 
-            'date' => (string)$this->date,
-            'time_start' => (string)$this->time_start,
-            'time_end' => (string)$this->time_end,
+            'date_time' => (string)$this->date,
+
+            'patient' => new PatientResource($this->patients),
+            'doctor' => new DoctorResource($this->doctors),
+
+            'created_at' => (string)$this->created_at,
             
         ];
     }

@@ -41,13 +41,14 @@ class Doctor extends Model
     }
 
     public function user() {
-        return $this->belongsTo('App\Model\User', 'user_id');
+        return $this->belongsTo('App\Models\User', 'user_id');
     }
     public function patient() {
-        return $this->belongsTo('App\Model\Patient', 'patient_id');
+
+        return $this->belongsTo('App\Models\Patient', 'patient_id');
     }
-    public function schedule()
+    public function schedules()
     {
-        return $this->belongsTo('App\Model\Schedule','schedule_id');
+        return $this->hasMany('App\Models\Schedule');
     }
 }

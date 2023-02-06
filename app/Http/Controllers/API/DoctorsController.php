@@ -20,7 +20,7 @@ class DoctorsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $where = [
 			['deprecated', '=', 0]
@@ -39,9 +39,9 @@ class DoctorsController extends Controller
 		 	}
 		}
 
-        $doctor = Doctor::where($where)->orderBy('id', $order)->get();
+			$doctor = Doctor::where($where)->orderBy('id', $order)->get();
 
-        return new DoctorsResource($doctor);
+			return new DoctorsResource($doctor);
     }
 
     /**
