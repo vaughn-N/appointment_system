@@ -65,7 +65,9 @@ class DoctorsController extends Controller
         $rules = [
 			// 'name' => 'unique:tags,name'
         ];
-
+		
+		$aasd = "";
+		$bbbb = "4d";
         $_input = $request->input();
 
         $validator = Validator::make($_input, $rules);
@@ -228,7 +230,7 @@ class DoctorsController extends Controller
 			['deprecated', '=', 0],
 			['id', '=', $id]
 		];
-        $record = Doctor::where($doctor_where)->first();
+        $record = Doctor::where($listing_where)->first();
 		
 		if ($record) {
 			$record->deprecated = 1;
@@ -256,4 +258,8 @@ class DoctorsController extends Controller
 		
 		return response()->json($data);
     }
+
+	public function change_variable($data) {
+		return $data
+	}
 }
