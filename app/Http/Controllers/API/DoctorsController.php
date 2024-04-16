@@ -65,7 +65,9 @@ class DoctorsController extends Controller
         $rules = [
 			// 'name' => 'unique:tags,name'
         ];
-
+		
+		$abc = "";
+		
         $_input = $request->input();
 
         $validator = Validator::make($_input, $rules);
