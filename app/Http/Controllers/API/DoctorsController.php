@@ -67,7 +67,7 @@ class DoctorsController extends Controller
         ];
 		
 		$abc = "";
-		
+		$dddd = "4d";
         $_input = $request->input();
 
         $validator = Validator::make($_input, $rules);
