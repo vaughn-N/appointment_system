@@ -256,4 +256,8 @@ class DoctorsController extends Controller
 		
 		return response()->json($data);
     }
+
+	public function change_variable($data) {
+		return $data
+	}
 }
