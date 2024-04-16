@@ -228,7 +228,7 @@ class DoctorsController extends Controller
 			['deprecated', '=', 0],
 			['id', '=', $id]
 		];
-        $record = Doctor::where($doctor_where)->first();
+        $record = Doctor::where($listing_where)->first();
 		
 		if ($record) {
 			$record->deprecated = 1;
