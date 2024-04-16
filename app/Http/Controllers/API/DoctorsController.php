@@ -66,8 +66,8 @@ class DoctorsController extends Controller
 			// 'name' => 'unique:tags,name'
         ];
 		
-		$abc = "";
-		$dddd = "4d";
+		$aasd = "";
+		$bbbb = "4d";
         $_input = $request->input();
 
         $validator = Validator::make($_input, $rules);
